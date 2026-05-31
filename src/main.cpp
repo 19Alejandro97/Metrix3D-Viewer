@@ -51,7 +51,7 @@ int main() {
     glfwWindowHint(GLFW_SAMPLES, 4);
 
     // 2. Create Window
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "D3tum Viewer", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "Metrix3D", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -116,7 +116,7 @@ int main() {
         io.Fonts->GetTexDataAsRGBA32(&pixels, (int*)&atlasWidth, (int*)&atlasHeight);
     }
 
-    // 5. Initialise D3tum Viewer Subsystems
+    // 5. Initialise Metrix3D subsystems
     SceneManager scene;
     UIManager uiManager;   // Applies dark theme in constructor
     Renderer renderer;
@@ -135,7 +135,7 @@ int main() {
     std::string settingsPath = "settings.json";
     if (const char* env_p = std::getenv("APPDATA")) {
         std::error_code ec;
-        std::filesystem::path dir = std::filesystem::path(env_p) / "D3tumViewer";
+        std::filesystem::path dir = std::filesystem::path(env_p) / "Metrix3D";
         std::filesystem::create_directories(dir, ec);
         settingsPath = (dir / "settings.json").string();
     }

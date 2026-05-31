@@ -1,125 +1,121 @@
 # AGENTS.md
 
-## Project Context
+## Contexto Del Proyecto
 
-Metrix3D is a native Windows CAD/mesh viewer focused on 3D inspection workflows:
-model import, scene management, OpenGL rendering, metrology, snapping, section
-analysis, geometric alignment, and mesh repair tools.
+Metrix3D es una aplicacion nativa Windows para inspeccion CAD y trabajo con
+mallas 3D. El producto combina importacion de modelos, gestion de escena,
+render OpenGL, metrologia, snapping, secciones, alineacion geometrica y
+procesado basico de mallas.
 
-Important naming note: the product/project name is now **Metrix3D**, but several
-technical identifiers are still legacy:
+Nombre canonico actual:
 
-- CMake project: `D3tumViewer`
-- CMake target: `D3tumViewer`
-- Executable: `D3tumViewer.exe`
-- Settings folder in code: `%APPDATA%/D3tumViewer`
-- README still contains legacy `D3tum Viewer` text
+- Producto visible: `Metrix3D`
+- Proyecto CMake: `Metrix3D`
+- Target CMake: `Metrix3D`
+- Ejecutable: `Metrix3D.exe`
+- Carpeta de settings: `%APPDATA%/Metrix3D/settings.json`
 
-Do not rename these identifiers casually. Treat a full rename as a separate,
-tested refactor.
+No renombrar `DatumEntity` ni `datum_entity.*`. En ese contexto, "datum" es un
+termino CAD/metrologico y no branding antiguo del proyecto.
 
 ## Stack
 
-- Language: C++20
-- Build: CMake 3.26+, Visual Studio 2022 generator, vcpkg manifest mode
-- Graphics: OpenGL 4.5 Core Profile, GLAD, GLFW
-- UI: Dear ImGui docking branch, ImGuizmo, FontAwesome font asset
-- Math: GLM
-- Import: Assimp
-- JSON settings: RapidJSON
-- Local vendor code: `src/vendor/ImGuizmo`
+- Lenguaje: C++20
+- Build: CMake 3.26+, Visual Studio 2022, vcpkg manifest mode
+- Graficos: OpenGL 4.5 Core Profile, GLAD, GLFW
+- UI: Dear ImGui docking, ImGuizmo, FontAwesome como asset local
+- Matematicas: GLM
+- Importacion: Assimp
+- Settings JSON: RapidJSON
+- Vendor local: `src/vendor/ImGuizmo`
 
-## Build And Run
+## Build Y Ejecucion
 
-Preferred verification build, isolated from historical generated files:
+Build aislado recomendado para verificaciones:
 
 ```powershell
-cmake -S . -B out/review-build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake"
-cmake --build out/review-build --config Release --target D3tumViewer
+cmake -S . -B out/metrix3d-build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake"
+cmake --build out/metrix3d-build --config Release --target Metrix3D
 ```
 
-This produces:
+Salida esperada:
 
 ```text
-out/review-build/Release/D3tumViewer.exe
+out/metrix3d-build/Release/Metrix3D.exe
 ```
 
-The historical/local project build convention uses:
+Salida convencional del proyecto:
 
 ```powershell
 cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake"
-cmake --build build --config Release --target D3tumViewer
+cmake --build build --config Release --target Metrix3D
 ```
 
-That produces:
+Salida esperada:
 
 ```text
-build/Release/D3tumViewer.exe
+build/Release/Metrix3D.exe
 ```
 
-Current caution: the checked local `build/` directory was generated for an older
-path, `C:/Proyectos/D3tum Viewer`, and should not be trusted. It is ignored by
-Git. Use a clean build directory unless intentionally regenerating `build/`.
+Si `build/` existe desde antes del rename, regenerarlo antes de usarlo como
+evidencia. `build/` y `out/` son artefactos locales ignorados por Git.
 
-## Repository Rules
+## Reglas Para Cambios Futuros
 
-- Do not edit or commit generated build artifacts:
+- No editar ni commitear artefactos generados:
   - `build/`
   - `out/`
   - `CMakeFiles/`
   - `vcpkg_installed/`
   - `*.exe`, `*.dll`, `*.obj`, `*.pdb`, `*.lib`
-- Keep manual source edits scoped. This codebase has many coupled UI/render/core
-  paths and no automated tests yet.
-- Do not call OpenGL functions from background worker threads. Mesh import and
-  primitive analysis run asynchronously, but GPU upload and GPU buffer rebuilds
-  must stay on the main/render thread.
-- Treat `SceneObject::scene` as an owning-context back pointer, not an ownership
-  model. Check it when changing clipping or rendering code.
-- Selection and activation are intentionally different concepts:
-  - `isSelected`: primary UI selection/properties target
-  - `isActive`: operation set for transform, merge, clipping, alignment
-- Be careful with `UIManager::meshLoadTasks` and `analysisTasks`. They control
-  async import and primitive detection; do not mutate mesh data from the UI while
-  an analysis task may still be reading/writing the same mesh.
-- The renderer assumes mesh GPU buffers are valid when drawing. If mesh CPU data
-  changes, rebuild relevant GPU buffers.
-- The current undo stack is narrow. It mainly covers alignment commands, not all
-  transform/material/mesh processing actions.
-- The README is aspirational in places. Use `docs/revision-funcional.md` and the
-  source code as the current ground truth.
+- Mantener cambios manuales acotados. La app no tiene tests automatizados y hay
+  acoplamiento fuerte entre UI, render, escena y mallas.
+- No llamar funciones OpenGL desde workers. Importacion y analisis pueden correr
+  en background, pero la subida a GPU y reconstruccion de buffers debe ocurrir
+  en el hilo principal/render.
+- Respetar los limites de `SceneManager` y `UIManager`. `SceneManager` es el
+  propietario logico de objetos, seleccion y planos de corte; `UIManager`
+  orquesta estado de herramientas, tareas async y paneles.
+- Tratar `UIManager::meshLoadTasks` y `analysisTasks` con cuidado. Controlan
+  importacion async y deteccion de primitivas; no mutar la misma malla desde UI
+  mientras una tarea pueda estar leyendola o escribiendola.
+- Si se cambian datos CPU de una malla, revisar si tambien hay que actualizar
+  buffers GPU, BVH, adjacency, feature edges y cache de primitivas.
+- La pila de undo actual es parcial. Principalmente cubre alineacion, no todas
+  las acciones de transformacion, material, delete, merge o procesado.
+- La diferencia entre seleccion y activacion es intencional:
+  - `isSelected`: objeto principal para propiedades/UI.
+  - `isActive`: conjunto operativo para transform, merge, clipping y alineacion.
 
-## Subsystem Map
+## Mapa De Subsistemas
 
-- `src/main.cpp`: application entry point, GLFW/OpenGL/ImGui setup, main loop,
-  drag-and-drop import callback, global callback pointers.
-- `src/core/`: domain model and geometry kernels:
-  - `Mesh`: CPU geometry, GPU buffer handles, import/export, repair delegation.
-  - `SceneObject`: transform, material, raycast, world bounds, assembly state.
-  - `SceneManager`: object list, selected object, clipping planes.
-  - `Camera`: orbit/pan/zoom/focus and projection state.
-  - `MathUtils`: ray casts, BVH traversal, circle/sphere/line math.
-  - `FeatureExtraction`: plane/circle extraction from mesh topology.
-  - `KinematicSolver`: limited sequential alignment solver.
-  - `SnapEngine`: hover snap query against surfaces, features, primitives.
-  - `SettingsIO`: JSON persistence for selected app settings.
-- `src/core/topology/`: adjacency, BVH, primitive analysis, feature edges, mesh
-  smoothing and hole filling.
-- `src/render/`: FBO setup, shader management, main mesh passes, edge overlays,
-  section caps, ghost plane rendering.
-- `src/ui/`: ImGui orchestration, panels, shared UI state, console.
-- `src/ui/viewport/`: viewport image, camera controls, ImGuizmo, snapping
-  overlays, measurement drawings, interaction tool chain.
-- `assets/`: runtime UI assets copied after build.
+- `src/main.cpp`: entrada de la app, setup GLFW/OpenGL/ImGui, main loop,
+  drag-and-drop, carga/guardado de settings.
+- `src/core/`: modelo de dominio, geometria y persistencia:
+  - `Mesh`: geometria CPU, handles GPU, import/export y caches de topologia.
+  - `SceneObject`: transform, material, bounds, raycast y estado de ensamblaje.
+  - `SceneManager`: lista de objetos, seleccion y planos de corte.
+  - `Camera`: orbit/pan/zoom/focus y proyeccion.
+  - `MathUtils`: raycasts, BVH, circulos, esferas, lineas y utilidades.
+  - `FeatureExtraction`: extraccion de planos/circulos desde topologia.
+  - `KinematicSolver`: solver secuencial limitado para alineacion.
+  - `SnapEngine`: snapping contra superficies, features y primitivas.
+  - `SettingsIO`: persistencia JSON parcial.
+- `src/core/topology/`: adjacency, BVH, primitive analysis, feature edges,
+  smoothing y hole filling.
+- `src/render/`: FBO, shaders, pasadas de malla, edges, caps de seccion y ghost
+  planes.
+- `src/ui/`: orquestacion ImGui, paneles, consola y estado compartido de UI.
+- `src/ui/viewport/`: imagen del viewport, camara, gizmo, snapping, overlays,
+  mediciones e interacciones.
+- `src/vendor/`: dependencias locales integradas en el build.
 
-## Current Verification Snapshot
+## Revision Funcional
 
-On 2026-05-31, a clean isolated configure and Release build succeeded with the
-Visual Studio 2022 Community vcpkg toolchain:
+La revision de funcionalidades, riesgos y recomendaciones vive en:
 
 ```text
-out/review-build/Release/D3tumViewer.exe
+docs/revision-funcional.md
 ```
 
-See `docs/revision-funcional.md` for the complete functionality review, risks,
-and recommended next work.
+Usar ese documento y el codigo como fuente de verdad antes de ampliar la app.

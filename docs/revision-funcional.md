@@ -49,26 +49,26 @@ El usuario confirmo que el baseline ya fue empujado a GitHub.
 Comando de configuracion usado:
 
 ```powershell
-cmake -S . -B out/review-build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake"
+cmake -S . -B out/metrix3d-build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake"
 ```
 
 Resultado: configuracion correcta. vcpkg restauro/instalo dependencias y CMake
 genero los archivos en:
 
 ```text
-C:/Proyectos/Metrix3D Viewer/out/review-build
+C:/Proyectos/Metrix3D Viewer/out/metrix3d-build
 ```
 
 Comando de build usado:
 
 ```powershell
-cmake --build out/review-build --config Release --target D3tumViewer
+cmake --build out/metrix3d-build --config Release --target Metrix3D
 ```
 
 Resultado: build correcto. Salida generada:
 
 ```text
-C:/Proyectos/Metrix3D Viewer/out/review-build/Release/D3tumViewer.exe
+C:/Proyectos/Metrix3D Viewer/out/metrix3d-build/Release/Metrix3D.exe
 ```
 
 ### Build historico del proyecto
@@ -77,18 +77,18 @@ El flujo historico del proyecto usa `build/`:
 
 ```powershell
 cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake"
-cmake --build build --config Release --target D3tumViewer
+cmake --build build --config Release --target Metrix3D
 ```
 
 Salida esperada:
 
 ```text
-build/Release/D3tumViewer.exe
+build/Release/Metrix3D.exe
 ```
 
-Advertencia importante: el `build/` local existente contiene cache generado para
-`C:/Proyectos/D3tum Viewer`, no para `C:/Proyectos/Metrix3D Viewer`. Por eso no
-debe usarse como evidencia de estado actual hasta regenerarlo limpiamente.
+Advertencia importante: el `build/` local existente puede contener cache
+generado antes del rename global del proyecto. Por eso no debe usarse como
+evidencia de estado actual hasta regenerarlo limpiamente.
 
 ## 3. Mapa de arquitectura
 
@@ -281,7 +281,7 @@ registran pero el solver las ignora con warning.
 - X-Ray snapping como modo de medicion.
 - Handoff de circulo medido a objetivo de alineacion.
 - Undo/redo de alineacion.
-- Settings JSON parciales en `%APPDATA%/D3tumViewer/settings.json`.
+- Settings JSON parciales en `%APPDATA%/Metrix3D/settings.json`.
 - Consola con `/help` y `/verify_measurement`.
 
 ### Parcial o limitado
@@ -402,14 +402,14 @@ registran pero el solver las ignora con warning.
 5. Ampliar command stack.
    - Hacer undo/redo para transform, delete, merge, bake, scaling y processing.
 
-6. Normalizar naming Metrix3D.
-   - En una tarea separada, renombrar README, CMake project/target, binario,
-     settings path y cadenas visibles si el producto ya no debe exponer D3tum.
+6. Mantener consistente el naming Metrix3D.
+   - El producto, proyecto CMake, target, binario, settings path y cadenas
+     visibles deben usar `Metrix3D`.
 
 7. Regenerar `build/` limpiamente si se quiere mantener esa carpeta como salida
    local principal.
    - No versionarla.
-   - Confirmar `build/Release/D3tumViewer.exe`.
+   - Confirmar `build/Release/Metrix3D.exe`.
 
 8. Corregir textos con codificacion rota.
    - Usar UTF-8 de forma consistente o mantener ASCII en codigo/documentacion.

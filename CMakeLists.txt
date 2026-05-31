@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(D3tumViewer VERSION 1.0 LANGUAGES CXX)
+project(Metrix3D VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -57,15 +57,15 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vendor/ImGuizmo/ImGuizmo.cpp
 )
 
-add_executable(D3tumViewer ${SOURCES})
+add_executable(Metrix3D ${SOURCES})
 
 # --- Includes & Links ---
-target_include_directories(D3tumViewer PRIVATE 
+target_include_directories(Metrix3D PRIVATE
     src/
     src/vendor/
 )
 
-target_link_libraries(D3tumViewer PRIVATE 
+target_link_libraries(Metrix3D PRIVATE
     glfw
     glad::glad
     glm::glm
@@ -76,25 +76,25 @@ target_link_libraries(D3tumViewer PRIVATE
 
 # On Windows, link the standard OpenGL library and suppress the console window
 if (WIN32)
-    target_link_libraries(D3tumViewer PRIVATE opengl32)
+    target_link_libraries(Metrix3D PRIVATE opengl32)
     # WIN32_EXECUTABLE hides the console; /ENTRY:mainCRTStartup keeps int main() as entry point
-    set_target_properties(D3tumViewer PROPERTIES
+    set_target_properties(Metrix3D PROPERTIES
         WIN32_EXECUTABLE TRUE
         LINK_FLAGS "/ENTRY:mainCRTStartup"
     )
 endif()
 
 # Define ImGui Backend constants
-target_compile_definitions(D3tumViewer PRIVATE
+target_compile_definitions(Metrix3D PRIVATE
     IMGUI_IMPL_OPENGL_LOADER_GLAD
 )
 
 # --- Asset & DLL Deployment ---
 # Copy assets directory and required vcpkg DLLs to the output folder after build
-add_custom_command(TARGET D3tumViewer POST_BUILD
+add_custom_command(TARGET Metrix3D POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_CURRENT_SOURCE_DIR}/assets"
-    "$<TARGET_FILE_DIR:D3tumViewer>/assets"
+    "$<TARGET_FILE_DIR:Metrix3D>/assets"
     
     # Copy all DLLs from vcpkg_installed to the binary directory for runtime linkage
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -106,11 +106,11 @@ add_custom_command(TARGET D3tumViewer POST_BUILD
     "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-windows/bin/poly2tri.dll"
     "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-windows/bin/pugixml.dll"
     "${CMAKE_BINARY_DIR}/vcpkg_installed/x64-windows/bin/zlib1.dll"
-    "$<TARGET_FILE_DIR:D3tumViewer>"
+    "$<TARGET_FILE_DIR:Metrix3D>"
     
     COMMENT "Copying assets and vcpkg DLLs to build directory..."
 )
 
 # --- Installation ---
-install(TARGETS D3tumViewer RUNTIME DESTINATION bin)
+install(TARGETS Metrix3D RUNTIME DESTINATION bin)
 install(DIRECTORY assets DESTINATION bin)

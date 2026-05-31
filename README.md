@@ -1,107 +1,130 @@
-# D3tum Viewer 🚀
+# Metrix3D
 
-## ✨ Key Features
+Metrix3D is a native Windows CAD and mesh viewer for 3D inspection workflows.
+It focuses on importing mesh assets, scene management, OpenGL rendering,
+metrology, snapping, section analysis, geometric alignment, and basic mesh
+processing.
 
-### 🖥️ Premium User Experience
-- **Modular Architecture**: Clean separation between the UI orchestrator, 3D viewport, and tool systems.
-- **Docking UI**: Sophisticated visual design featuring dark mode, micro-interactions, responsive fluid layouts, and a full-featured **Scene Explorer** for multi-object management, visibility toggles, and color palettes.
-- **Advanced Navigation**: Integrated 3D **ViewCube** with UCS (User Coordinate System) indicator, and an interactive transform gizmo (translation, rotation, scaling) with local/global space support.
+## Key Features
 
-### 📐 Professional Metrology
-- **Distance**: Point-to-Point, Point-to-Plane, Plane-to-Plane, Center-to-Center, and **Internal X-Ray Snapping**.
-- **Circle**: Smart Auto-Detection and 3-Point Manual with diameter/radius toggles.
-- **Angle**: Plane-to-Plane, Axis-to-Axis, and 3-Point Angle.
-- **Interactive History**: Tracks all measurements with triaxial UCS breakdowns.
+### User Experience
 
-### ⚙️ Smart Alignment & Kinematics
-- **Geometric Assembly**: Align parts using geometric entities (planes, circles) with automatic Radii Match validation.
-- **Kinematic Controls**: Lock assemblies, apply indexing angles (e.g., +/- 60 deg for hex bolts), or unlock for free movement.
-- **Smart Assembly Bridge**: Directly handoff measured features as alignment targets.
+- Modular application structure with separate core, render, UI, viewport, and
+  topology subsystems.
+- Dear ImGui docking interface with scene explorer, visibility toggles,
+  selection state, material controls, and tool panels.
+- 3D viewport with orbit camera, ViewCube, UCS indicator, and ImGuizmo
+  transform controls.
 
-### 🧩 Advanced Geometry Processing
-- **Native Importer**: Seamlessly read, import, and drag-and-drop multiple industry-standard formats (**STL, OBJ, FBX, GLTF, GLB, PLY**).
-- **Mesh Repair**: Auto-Fill Holes via Centroid Umbrella algorithms, Laplacian Relaxation (Smoothing) with adjustable iterations, and Hard Edges extraction based on angle thresholds.
-- **Operations**: Merge active meshes into a single object and **Bake Transformations** directly into vertex telemetry.
+### Metrology
 
-### 🎨 High-Quality Rendering
-- **Material Properties**: Granular control over Opacity, Specular, and Gloss.
-- **Visualization Modes**: Solid, Wireframe, Points, and Section Analysis (up to 6 simultaneous clipping planes).
-- **Anti-Aliasing**: 4x MSAA (Multi-Sample Anti-Aliasing) and dynamic transparency.
+- Distance measurements: point-to-point, point-to-plane, plane-to-plane,
+  center-to-center, and X-Ray snapping mode.
+- Circle measurements: auto-detection and manual 3-point capture.
+- Angle measurements: plane-to-plane, axis-to-axis, and 3-point angle.
+- Session history with visibility toggles and movable annotations.
 
----
+### Alignment And Kinematics
 
-## 🛠️ Technology Stack
+- Geometric alignment workflow using captured planes, circles, and related
+  entities.
+- Assembly lock state and indexing angle controls.
+- Measurement-to-alignment handoff for selected geometric features.
 
-| Component | Technology | Description |
-|-----------|------------|-------------|
-| **Language** | C++20 | Core application logic and performance. |
-| **Graphics API** | OpenGL 4.5 Core Profile | High-performance rendering pipeline. |
-| **GUI Framework** | Dear ImGui (Docking Branch) | Hardware-accelerated user interface. |
-| **Mathematics** | GLM | OpenGL Mathematics library for 3D calculations. |
-| **Model Loading** | Assimp | Asset importer for STL, OBJ, FBX, GLTF, etc. |
-| **Package Manager**| vcpkg | C++ dependency resolving. |
-| **Build System** | CMake 3.26+ | Cross-platform build configuration. |
+### Geometry Processing
 
----
+- Import through Assimp for common mesh formats: STL, OBJ, FBX, GLTF, GLB, and
+  PLY.
+- Binary STL export for the active object.
+- Mesh repair operations including hole filling, Laplacian smoothing, hard edge
+  extraction, active-object merge, and bake transformations.
 
-### 🚀 Installation & Build Guide (Windows)
+### Rendering
 
-Follow these steps to set up D3tum Viewer on a brand-new computer.
+- OpenGL 4.5 renderer with framebuffer rendering for the ImGui viewport.
+- Solid, wireframe, points, transparency, hard-edge overlays, and section
+  analysis.
+- Up to 6 clipping planes with section caps.
 
-#### 1. Prerequisites (Verification)
-Ensure the following are installed and accessible from your terminal (**PowerShell** or **Git Bash**):
-- **Git**: Run `git --version` to verify.
-- **CMake**: Run `cmake --version` to verify (version 3.26+ required).
-- **C++ Build Tools**: Install [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/) with the **"Desktop development with C++"** workload.
+## Technology Stack
 
-#### 2. Get the Source Code
-```bash
-git clone https://github.com/YOUR-USERNAME/D3tumViewer.git
-cd D3tumViewer
+| Component | Technology |
+| --- | --- |
+| Language | C++20 |
+| Build | CMake 3.26+, Visual Studio 2022, vcpkg |
+| Graphics | OpenGL 4.5 Core Profile, GLAD, GLFW |
+| UI | Dear ImGui docking, ImGuizmo |
+| Math | GLM |
+| Import | Assimp |
+| Settings | RapidJSON |
+
+## Build Guide
+
+### Prerequisites
+
+- Git
+- CMake 3.26 or newer
+- Visual Studio 2022 with the "Desktop development with C++" workload
+- vcpkg toolchain bundled with Visual Studio or another compatible vcpkg
+  installation
+
+### Clone
+
+```powershell
+git clone git@github.com:19Alejandro97/Metrix3D-Viewer.git
+cd Metrix3D-Viewer
 ```
 
-#### 3. Locate the `vcpkg` Toolchain
-This project manages dependencies using the `vcpkg` integrated with Visual Studio. You need the path to `vcpkg.cmake`:
+### Configure And Build
 
-> 📍 **Standard Path**: `C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/vcpkg/scripts/buildsystems/vcpkg.cmake`  
-> *(If using VS Community, replace `BuildTools` with `Community`)*
+Run these commands from the project root:
 
-#### 4. Configure & Build
-Run these commands from the project root (`D3tumViewer/`):
-
-```bash
-# 1. Generate project (Replaces "..." with the path from Step 3)
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/vcpkg/scripts/buildsystems/vcpkg.cmake"
-
-# 2. Compile the project
-cmake --build build --config Release
+```powershell
+cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Community/VC/vcpkg/scripts/buildsystems/vcpkg.cmake"
+cmake --build build --config Release --target Metrix3D
 ```
 
-> 💡 **Tip:** The first build will automatically download and compile all dependencies (`glfw`, `assimp`, etc.) listed in `vcpkg.json`.
+Expected executable:
 
-#### 5. Run the Application
-The build process handles the deployment of all required DLLs and assets automatically.
-
-```bash
-.\build\Release\D3tumViewer.exe
+```text
+build/Release/Metrix3D.exe
 ```
 
----
+### Run
 
-## 📂 Source Code Structure
+```powershell
+.\build\Release\Metrix3D.exe
+```
 
-- `src/core/`: 
-    - `topology_engine.cpp`: Mesh analysis, BVH, and feature extraction.
-    - `mesh.cpp`: GPU-encapsulated geometry container.
-    - `math_utils.cpp`: Pure linear algebra and geometric primitives.
-- `src/render/`: Shaders (embedded) and low-level OpenGL renderer.
-- `src/ui/`: 
-    - `ui_overlays.cpp`: Dedicated 2D/3D viewport drawings.
-    - `ui_manager.cpp`: Layout and orchestration.
-- `assets/`: UI assets (Fonts/Icons) deployed automatically during build.
+The build copies runtime assets and required vcpkg DLLs into the output
+directory after compilation.
 
----
+## Source Structure
 
-## 📜 License
+- `src/main.cpp`: entry point, GLFW/OpenGL/ImGui setup, main loop, settings, and
+  drag-and-drop import.
+- `src/core/`: scene model, mesh data, import/export, settings, undo, snapping,
+  math, feature extraction, and alignment solver.
+- `src/core/topology/`: adjacency, BVH, primitive analysis, feature detection,
+  smoothing, and hole filling.
+- `src/render/`: shader management, framebuffer setup, mesh passes, overlays,
+  and section rendering.
+- `src/ui/`: ImGui orchestration, panels, viewport, tools, console, and
+  interaction state.
+- `src/vendor/ImGuizmo/`: local ImGuizmo source.
+- `assets/`: runtime fonts and UI assets copied during build.
 
-D3tum Viewer is private software. All rights reserved. See the `LICENSE` document for complete legal permissions and restrictions.
+## Notes For Contributors
+
+- The canonical product name, CMake project, CMake target, and executable are
+  `Metrix3D`.
+- Keep `DatumEntity` and `datum_entity.*` unchanged. In that context, "datum"
+  is a CAD/metrology concept, not project branding.
+- Do not edit generated build directories such as `build/` or `out/`.
+- See `AGENTS.md` for agent workflow rules and `docs/revision-funcional.md` for
+  the current functionality review.
+
+## License
+
+Metrix3D is private software. All rights reserved. See the `LICENSE` document
+for complete legal permissions and restrictions.

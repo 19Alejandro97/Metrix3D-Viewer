@@ -294,7 +294,7 @@ bool Mesh::ExportSTL(const std::string& path, const Mat4f& worldMatrix) const {
 
     // 80-byte ASCII header
     char header[80] = {};
-    std::string hdr = "Binary STL exported by D3tum Viewer — " + name;
+    std::string hdr = "Binary STL exported by Metrix3D - " + name;
     hdr.resize(79, ' ');
     std::memcpy(header, hdr.c_str(), 79);
     file.write(header, 80);

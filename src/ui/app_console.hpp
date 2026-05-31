@@ -93,7 +93,7 @@ private:
     }
 
     AppConsole() {
-        AddLogInternal("[INFO] D3tum Viewer ready. Type /help for commands.");
+        AddLogInternal("[INFO] Metrix3D ready. Type /help for commands.");
         scrollToBottom = true;
         inputBuffer[0] = 0;
     }
